@@ -18,11 +18,11 @@ selected_id = ""
 
 
 commands = {  # command description used in the "help" command
-    'start'       : 'Get started with the bot',
     'help'        : 'List available commands',
     'all'         : 'List all dates',
     'dates':'List dates by category',
     'random': 'Get a random date idea',
+    'upcoming': 'View upcoming dates',
     'link' : 'Get URL to the Notion document'
 }
 
@@ -62,10 +62,21 @@ def all_dates(message):
     chat_id = message.chat.id
     markup = create_markup()
     list = stream.all_dates()
-    for item in list:
-        item = InlineKeyboardButton(item.name, callback_data=item.id)
-        markup.add(item)
-    bot.send_message(chat_id, "Looking up <b>all</b> dates:", reply_markup=markup)
+    if list:
+        for item in list:
+            item = InlineKeyboardButton(item['name'], callback_data=item['id'])
+            markup.add(item)
+        bot.send_message(chat_id, "Looking up <b>all</b> dates:", reply_markup=markup)
+
+@bot.message_handler(commands=['upcoming'])
+def upcoming_dates(message):
+    chat_id = message.chat.id
+    list = stream.upcoming_dates()
+    if list:
+        string = ""
+        for item in list:
+            string += item['date'] + ": " + item['name'] + "\n"
+        bot.send_message(chat_id, string)
 
 @bot.message_handler(commands=['dates'])
 def find_dates(message):

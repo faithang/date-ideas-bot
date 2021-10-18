@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import requests
 import random
+from datetime import datetime
 
 load_dotenv()
 NOTION_KEY = os.getenv('NOTION_KEY')
@@ -55,9 +56,19 @@ def all_dates():
     return list
 
 def upcoming_dates():
-    query = {"filter": {"property": "Tags", "multi_select": {"contains": tag}}}
+    query = {"filter": {"property": "Date", "date": {"on_or_after": datetime.today().strftime('%Y-%m-%d')}}}
+    response = requests.post(BASE_URL + DATABASE_ID + '/query', 
+    headers = header,
+    json = query)
+    raw_dates = response.json()['results']
+    list = []
+    for date in raw_dates: 
+        item_name = date['properties']['Name']['title'][0]['plain_text']
+        item_id = date['id']
+        item_date = date['properties']['Date']['date']['start']
+        list.append({ "name": item_name, "id": item_id, "date": item_date })
+    return list
 
 def mark_done(id):
     query = {"properties": {"Done": { "checkbox": True}}}
     requests.patch('https://api.notion.com/v1/pages/' + id, headers = header, json = query)
-    
