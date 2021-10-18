@@ -1,6 +1,3 @@
 pyTelegramBotAPI
-os
-stream
 python-dotenv
 requests
-random
