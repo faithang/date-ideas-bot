@@ -51,6 +51,16 @@ def start(m):
 def link(message):  
     bot.send_message(message.chat.id, NOTION_URL)
 
+@bot.message_handler(commands=['all'])
+def find_dates(message):
+    chat_id = message.chat.id
+    markup = create_markup()
+    list = stream.all_dates()
+    for item in list:
+        item = InlineKeyboardButton(item, callback_data=item)
+        markup.add(item)
+        bot.send_message(chat_id, "Looking up <b>all</b> dates:", reply_markup=markup)
+
 @bot.message_handler(commands=['dates'])
 def find_dates(message):
     chat_id = message.chat.id

@@ -42,5 +42,14 @@ def random_date():
         list.append(item_name)
     return random.choice(list)
 
+def all_dates():
+    response = requests.post(BASE_URL + DATABASE_ID + '/query', headers = header)
+    raw_dates = response.json()['results']
+    list = []
+    for date in raw_dates: 
+        item_name = date['properties']['Name']['title'][0]['plain_text']
+        list.append(item_name)
+    return list
+
 def upcoming_dates():
     query = {"filter": {"property": "Tags", "multi_select": {"contains": tag}}}
