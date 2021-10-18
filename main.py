@@ -16,6 +16,7 @@ selected_date = ""
 commands = {  # command description used in the "help" command
     'start'       : 'Initiate the bot',
     'help'        : 'Gives you information about the available commands',
+    'all'         : 'List all dates'
     'dates'        : 'List dates by category',
     'random': 'Get a random date idea',
     'link' : 'Get URL to the Notion document'
