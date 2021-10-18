@@ -1,4 +1,4 @@
-pytelegrambotapi
+pyTelegramBotAPI
 os
 stream
 python-dotenv
