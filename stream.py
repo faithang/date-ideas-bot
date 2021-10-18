@@ -56,7 +56,7 @@ def all_dates():
     return list
 
 def upcoming_dates():
-    query = {"filter": {"property": "Date", "date": {"on_or_after": datetime.today().strftime('%Y-%m-%d')}}}
+    query = {"filter": {"property": "Date", "date": {"on_or_after": datetime.today().strftime('%Y-%m-%d')}},"sorts": [{"property": "Date", "direction": "ascending"}]}
     response = requests.post(BASE_URL + DATABASE_ID + '/query', 
     headers = header,
     json = query)
