@@ -23,7 +23,7 @@ def get_tags():
     return tags
 
 def query_by_tag(tag):
-    query = {"filter": {"property": "Tags", "multi_select": {"contains": tag}}, "sorts": [{"property": "Done", "direction": "ascending"}]}
+    query = {"filter": {"property": "Tags", "multi_select": {"contains": tag}}, "sorts": [{"property": "Done", "direction": "ascending"},{"property": "Name", "direction": "ascending"}]}
     response = requests.post(BASE_URL + DATABASE_ID + '/query', 
     headers = header,
     json = query)
@@ -46,7 +46,8 @@ def random_date():
     return random.choice(list)
 
 def all_dates():
-    response = requests.post(BASE_URL + DATABASE_ID + '/query', headers = header)
+    query = {"sorts": [{"property": "Done", "direction": "ascending"},{"property": "Name", "direction": "ascending"}]}
+    response = requests.post(BASE_URL + DATABASE_ID + '/query', headers = header, json = query)
     raw_dates = response.json()['results']
     list = []
     for date in raw_dates: 
@@ -70,7 +71,7 @@ def upcoming_dates():
     return list
 
 def srv_dates():
-    query = {"filter": {"property": "SRV?", "checkbox": {"equals": True }}}
+    query = {"filter": {"property": "SRV?", "checkbox": {"equals": True }}, "sorts": [{"property": "Done", "direction": "ascending"},{"property": "Name", "direction": "ascending"}]}
     response = requests.post(BASE_URL + DATABASE_ID + '/query', 
     headers = header,
     json = query)
