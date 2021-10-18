@@ -11,11 +11,15 @@ NOTION_URL = os.getenv('NOTION_URL')
 
 bot = telebot.TeleBot(TELE_API_KEY, parse_mode='HTML')
 tags = stream.get_tags()
-selected_date = ""
+global selected_dates
+selected_dates = {}
+global selected_id
+selected_id = ""
+
 
 commands = {  # command description used in the "help" command
-    'start'       : 'Initiate the bot',
-    'help'        : 'Gives you information about the available commands',
+    'start'       : 'Get started with the bot',
+    'help'        : 'List available commands',
     'all'         : 'List all dates',
     'dates':'List dates by category',
     'random': 'Get a random date idea',
@@ -27,6 +31,7 @@ def is_tag(call):
     for tag in tags:
         if call.data == tag['name']:
             return True
+    print('cant find!')
     return False
 
 def is_date(call):
@@ -58,7 +63,7 @@ def all_dates(message):
     markup = create_markup()
     list = stream.all_dates()
     for item in list:
-        item = InlineKeyboardButton(item, callback_data=item)
+        item = InlineKeyboardButton(item.name, callback_data=item.id)
         markup.add(item)
     bot.send_message(chat_id, "Looking up <b>all</b> dates:", reply_markup=markup)
 
@@ -66,42 +71,73 @@ def all_dates(message):
 def find_dates(message):
     chat_id = message.chat.id
     markup = create_markup()
+    markup.add(InlineKeyboardButton("All", callback_data="all"))
     for tag in tags: 
-        print(tag)
-        item = InlineKeyboardButton(tag['name'], callback_data=tag['name'])
-        markup.add(item)
+        date = InlineKeyboardButton(tag['name'], callback_data=tag['name'])
+        markup.add(date)
     bot.send_message(chat_id, "What kind of date ideas are you interested in?", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     chat_id = call.message.chat.id
+    print(call.data)
+    # When tag is chosen
     if is_tag(call):
         list = stream.query_by_tag(call.data)
-        string = ""
         markup = create_markup()
         for item in list:
-            item = InlineKeyboardButton(item, callback_data=item)
-            markup.add(item)
+            global selected_dates
+            selected_dates[item['id']] = item['name']
+            date = InlineKeyboardButton(item['name'], callback_data=item['id'])
+            markup.add(date)
         bot.send_message(chat_id, "Looking up <b>" + call.data.lower() + "</b> dates:", reply_markup=markup)
+
+    # When 'all' tag is chosen
+    elif call.data == "all":
+        markup = create_markup()
+        list = stream.all_dates()
+        for item in list:
+            selected_dates[item['id']] = item['name']
+            date = InlineKeyboardButton(item['name'], callback_data=item['id'])
+            markup.add(date)
+        bot.send_message(chat_id, "Looking up <b>all</b> dates:", reply_markup=markup)
+
+    # When a particular date ID is chosen
+    elif call.data in selected_dates:
+        global selected_id
+        selected_id = call.data
+        markup = create_markup()
+        markup.add(InlineKeyboardButton("Mark date as done", callback_data="mark_done"))
+        # markup.add(InlineKeyboardButton("Schedule date", callback_data="schedule_date"))
+        bot.send_message(chat_id, "You've chosen: <b>" + selected_dates[call.data] + "</b>.", reply_markup=markup)
+    
+    # When actions on date is chosen
     elif call.data == "mark_done":
         # TODO: mark date as done
+        stream.mark_done(selected_id)
         # bot.send_message(chat_id, selected_date + " has been marked as done.")
-        bot.send_message(chat_id, "Date has been marked as done.")
+        bot.send_message(chat_id, "<b>" + selected_dates[selected_id] + "</b> has been marked as done.")
+
     elif call.data == "schedule_date":
         # TODO: schedule date
         # bot.send_message(chat_id, selected_date + " has been scheduled.")
         bot.send_message(chat_id, "Date has been scheduled.")
-    elif is_date(call):
-        selected_date = call.data
+
+    else: 
+        bot.send_message(chat_id, "I don't recognise that command. Let's start from the beginning.")
         markup = create_markup()
-        markup.add(InlineKeyboardButton("Mark date as done", callback_data="mark_done"))
-        # markup.add(InlineKeyboardButton("Schedule date", callback_data="schedule_date"))
-        bot.send_message(chat_id, "You've chosen: <b>" + call.data + "</b>.", reply_markup=markup)
+        markup.add(InlineKeyboardButton("All", callback_data="all"))
+        for tag in tags: 
+            date = InlineKeyboardButton(tag['name'], callback_data=tag['name'])
+            markup.add(date)
+        bot.send_message(chat_id, "What kind of date ideas are you interested in?", reply_markup=markup)
+    
+    
 
 
 @bot.message_handler(commands=['random'])
 def find_random_date(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Let's go... " + stream.random_date() + "!")
+    bot.send_message(chat_id, "Let's go... " + stream.random_date()['name'] + "!")
 
 bot.infinity_polling()

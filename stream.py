@@ -30,7 +30,8 @@ def query_by_tag(tag):
     list = []
     for date in raw_dates: 
         item_name = date['properties']['Name']['title'][0]['plain_text']
-        list.append(item_name)
+        item_id = date['id']
+        list.append({ "name": item_name, "id": item_id })
     return list
 
 def random_date():
@@ -39,7 +40,8 @@ def random_date():
     list = []
     for date in raw_dates: 
         item_name = date['properties']['Name']['title'][0]['plain_text']
-        list.append(item_name)
+        item_id = date['id']
+        list.append({ "name": item_name, "id": item_id })
     return random.choice(list)
 
 def all_dates():
@@ -48,8 +50,14 @@ def all_dates():
     list = []
     for date in raw_dates: 
         item_name = date['properties']['Name']['title'][0]['plain_text']
-        list.append(item_name)
+        item_id = date['id']
+        list.append({ "name": item_name, "id": item_id })
     return list
 
 def upcoming_dates():
     query = {"filter": {"property": "Tags", "multi_select": {"contains": tag}}}
+
+def mark_done(id):
+    query = {"properties": {"Done": { "checkbox": True}}}
+    requests.patch('https://api.notion.com/v1/pages/' + id, headers = header, json = query)
+    
