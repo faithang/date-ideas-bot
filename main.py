@@ -19,10 +19,11 @@ selected_id = ""
 
 commands = {  # command description used in the "help" command
     'help'        : 'List available commands',
-    'all'         : 'List all dates',
-    'dates':'List dates by category',
+    'upcoming': 'View your upcoming dates',
+    'all'         : 'List all date ideas',
+    'dates':'List date ideas by category',
+    'srv': 'List SRV-eligible date ideas',
     'random': 'Get a random date idea',
-    'upcoming': 'View upcoming dates',
     'link' : 'Get URL to the Notion document'
 }
 
