@@ -57,7 +57,7 @@ def find_dates(message):
     markup = create_markup()
     for tag in tags: 
         print(tag)
-        item = InlineKeyboardButton(tag['name'], callback_data=tag['id'])
+        item = InlineKeyboardButton(tag['name'], callback_data=tag['name'])
         markup.add(item)
     bot.send_message(chat_id, "What kind of date ideas are you interested in?", reply_markup=markup)
 
