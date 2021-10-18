@@ -161,6 +161,14 @@ def callback_query(call):
 @bot.message_handler(commands=['random'])
 def find_random_date(message):
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Let's go... " + stream.random_date()['name'] + "!")
+    random_date = stream.random_date()
+    global selected_id
+    selected_id = random_date['id']
+    global selected_dates
+    selected_dates[random_date['id']] = random_date['name']
+    markup = create_markup()
+    markup.add(InlineKeyboardButton("Mark date as done", callback_data="mark_done"))
+    # markup.add(InlineKeyboardButton("Schedule date", callback_data="schedule_date"))
+    bot.send_message(chat_id, "Let's go... <b>" + random_date['name'] + "</b>!", reply_markup=markup)
 
 bot.infinity_polling()
