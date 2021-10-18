@@ -84,5 +84,6 @@ def srv_dates():
     return list
 
 def mark_done(id):
-    query = {"properties": [{"Done": { "checkbox": True}}, {"Date": {"date": datetime.today().strftime('%Y-%m-%d')}} ]}
-    requests.patch('https://api.notion.com/v1/pages/' + id, headers = header, json = query)
+    query = {"properties": {"Done": { "checkbox": True}} }
+    response = requests.patch('https://api.notion.com/v1/pages/' + id, headers = header, json = query)
+    print(response)
