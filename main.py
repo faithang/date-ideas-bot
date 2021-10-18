@@ -31,7 +31,6 @@ def is_tag(call):
     for tag in tags:
         if call.data == tag['name']:
             return True
-    print('cant find!')
     return False
 
 def is_date(call):
@@ -77,6 +76,18 @@ def upcoming_dates(message):
         for item in list:
             string += item['date'] + ": " + item['name'] + "\n"
         bot.send_message(chat_id, string)
+
+@bot.message_handler(commands=['srv'])
+def upcoming_dates(message):
+    chat_id = message.chat.id
+    list = stream.srv_dates()
+    markup = create_markup()
+    for item in list:
+        global selected_dates
+        selected_dates[item['id']] = item['name']
+        date = InlineKeyboardButton(item['name'], callback_data=item['id'])
+        markup.add(date)
+    bot.send_message(chat_id, "Looking up <b>SRV-eligible</b> dates:", reply_markup=markup)
 
 @bot.message_handler(commands=['dates'])
 def find_dates(message):

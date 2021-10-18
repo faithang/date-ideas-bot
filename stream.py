@@ -69,6 +69,19 @@ def upcoming_dates():
         list.append({ "name": item_name, "id": item_id, "date": item_date })
     return list
 
+def srv_dates():
+    query = {"filter": {"property": "SRV?", "checkbox": {"equals": True }}}
+    response = requests.post(BASE_URL + DATABASE_ID + '/query', 
+    headers = header,
+    json = query)
+    raw_dates = response.json()['results']
+    list = []
+    for date in raw_dates: 
+        item_name = date['properties']['Name']['title'][0]['plain_text']
+        item_id = date['id']
+        list.append({ "name": item_name, "id": item_id })
+    return list
+
 def mark_done(id):
     query = {"properties": {"Done": { "checkbox": True}}}
     requests.patch('https://api.notion.com/v1/pages/' + id, headers = header, json = query)
