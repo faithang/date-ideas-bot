@@ -1,5 +1,5 @@
 # Date ideas bot
-Telegram bot written in Python. Weekend project to try out Notion APIs.
+Telegram bot written in Python. Weekend project to try out Notion APIs. Hosted on Heroku.
 
 ## What you can do
 * Get a random date suggestion when you're feeling uninspired
